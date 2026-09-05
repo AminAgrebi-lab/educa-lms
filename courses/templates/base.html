@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    {# Block for child templates to set a custom page title #}
+    <title>{% block title %}Educa{% endblock %}</title>
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+  </head>
+  <body>
+    <div id="header">
+      <a href="/" class="logo">Educa</a>
+      <ul class="menu">
+        {# Show Sign out for authenticated users, Sign in for guests #}
+        {% if request.user.is_authenticated %}
+          <li>
+            {# Logout requires a POST form in Django 5 (GET is no longer allowed) #}
+            <form action="{% url "logout" %}" method="post">
+              {% csrf_token %}
+              <button type="submit">Sign out</button>
+            </form>
+          </li>
+        {% else %}
+          <li><a href="{% url "login" %}">Sign in</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    <div id="content">
+      {# Main block: every child template injects its content here #}
+      {% block content %}
+      {% endblock %}
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', (event) => {
+        // DOM loaded
+        {# Block for child templates to inject JavaScript code #}
+        {% block domready %}
+        {% endblock %}
+      })
+    </script>
+  </body>
+</html>
