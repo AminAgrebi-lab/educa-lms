@@ -26,4 +26,10 @@ urlpatterns = [
         views.CourseDeleteView.as_view(),
         name='course_delete'
     ),
+    # Update the modules of a course
+    path(
+        '<pk>/module/',
+        views.CourseModuleUpdateView.as_view(),
+        name='course_module_update'
+    ),
 ]
