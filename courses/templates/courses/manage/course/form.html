@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}
+  {# If 'object' exists we are editing; otherwise we are creating #}
+  {% if object %}
+    Edit course "{{ object.title }}"
+  {% else %}
+    Create a new course
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <h1>
+    {% if object %}
+      Edit course "{{ object.title }}"
+    {% else %}
+      Create a new course
+    {% endif %}
+  </h1>
+  <div class="module">
+    <h2>Course info</h2>
+    <form method="post">
+      {{ form.as_p }}
+      {% csrf_token %}
+      <p><input type="submit" value="Save course"></p>
+    </form>
+  </div>
+{% endblock %}
+{% block domready %}
+  const title = document.querySelector('#id_title');
+  const slug = document.querySelector('#id_slug');
+  if (title && slug) {
+    title.addEventListener('input', () => {
+      // Client-side slugify: lowercase, remove special chars, spaces to hyphens
+      slug.value = title.value.toLowerCase().trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-');
+    });
+  }
+{% endblock %}

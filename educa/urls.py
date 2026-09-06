@@ -2,20 +2,27 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path
+# include() allows attaching the URLconf of the courses app
+from django.urls import include, path
 
 urlpatterns = [
+    # Login page URL using Django's built-in LoginView
     path(
         'accounts/login/', auth_views.LoginView.as_view(), name='login'
     ),
+    # Logout URL using Django's built-in LogoutView (accepts POST only)
     path(
         'accounts/logout/',
         auth_views.LogoutView.as_view(),
         name='logout'
     ),
+    # Django administration site
     path('admin/', admin.site.urls),
+    # Include the courses app URL patterns under the 'course/' prefix
+    path('course/', include('courses.urls')),
 ]
 
+# Serve media files during development only (DEBUG=True)
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
