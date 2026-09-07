@@ -22,6 +22,7 @@ from .models import Content, Course, Module
 
 class OwnerMixin:
     """Mixin: filters any QuerySet by the current user (owner)."""
+
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.filter(owner=self.request.user)
@@ -29,6 +30,7 @@ class OwnerMixin:
 
 class OwnerEditMixin:
     """Mixin: automatically assigns the current user as owner on save."""
+
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)
@@ -168,3 +170,15 @@ class ContentDeleteView(View):
         # Then delete the Content container object
         content.delete()
         return redirect('module_content_list', module.id)
+
+
+class ModuleContentListView(TemplateResponseMixin, View):
+    """Displays the sidebar of modules + the contents of the selected module."""
+    template_name = 'courses/manage/module/content_list.html'
+
+    def get(self, request, module_id):
+        # SECURITY: the module's course must belong to the current user
+        module = get_object_or_404(
+            Module, id=module_id, course__owner=request.user
+        )
+        return self.render_to_response({'module': module})

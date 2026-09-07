@@ -50,4 +50,10 @@ urlpatterns = [
         views.ContentDeleteView.as_view(),
         name='module_content_delete'
     ),
+    # List the contents of a specific module (with the modules sidebar)
+    path(
+        'module/<int:module_id>/',
+        views.ModuleContentListView.as_view(),
+        name='module_content_list'
+    ),
 ]
