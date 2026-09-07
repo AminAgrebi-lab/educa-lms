@@ -4,8 +4,12 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 # include() allows attaching the URLconf of the courses app
 from django.urls import include, path
+# Import the public course list view for the root URL
+from courses.views import CourseListView
 
 urlpatterns = [
+    # Public course catalog at the ROOT URL
+    path('', CourseListView.as_view(), name='course_list'),
     # Login page URL using Django's built-in LoginView
     path(
         'accounts/login/', auth_views.LoginView.as_view(), name='login'

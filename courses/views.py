@@ -21,6 +21,19 @@ from .models import Content, Course, Module
 # Third-party mixins: skip CSRF check + parse/return JSON automatically
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 
+# Count() aggregation + annotate() to attach totals to each object in one query
+from django.db.models import Count
+from .models import Subject
+
+# Generic view to display a single object by pk or slug
+from django.views.generic.detail import DetailView
+
+
+class CourseDetailView(DetailView):
+    """Public view: displays the overview of a single course."""
+    model = Course
+    template_name = 'courses/course/detail.html'
+
 
 class OwnerMixin:
     """Mixin: filters any QuerySet by the current user (owner)."""
@@ -206,3 +219,29 @@ class ContentOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
                 id=id, module__course__owner=request.user
             ).update(order=order)
         return self.render_json_response({'saved': 'OK'})
+
+class CourseListView(TemplateResponseMixin, View):
+    """Public view: lists all courses, optionally filtered by subject."""
+    model = Course
+    template_name = 'courses/course/list.html'
+
+    def get(self, request, subject=None):
+        # Attach the total number of courses to each subject (single query)
+        subjects = Subject.objects.annotate(
+            total_courses=Count('courses')
+        )
+        # Attach the total number of modules to each course (single query)
+        courses = Course.objects.annotate(
+            total_modules=Count('modules')
+        )
+        if subject:
+            # Filter by the subject given in the URL (404 if slug invalid)
+            subject = get_object_or_404(Subject, slug=subject)
+            courses = courses.filter(subject=subject)
+        return self.render_to_response(
+            {
+                'subjects': subjects,
+                'subject': subject,
+                'courses': courses
+            }
+        )

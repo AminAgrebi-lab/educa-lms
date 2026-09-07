@@ -2,71 +2,29 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # List the courses created by the current user
+    # --- Instructor CMS URLs (from Module 2) ---
+    path('mine/', views.ManageCourseListView.as_view(), name='manage_course_list'),
+    path('create/', views.CourseCreateView.as_view(), name='course_create'),
+    path('<pk>/edit/', views.CourseUpdateView.as_view(), name='course_edit'),
+    path('<pk>/delete/', views.CourseDeleteView.as_view(), name='course_delete'),
+    path('<pk>/module/', views.CourseModuleUpdateView.as_view(), name='course_module_update'),
+    path('module/<int:module_id>/content/<model_name>/create/', views.ContentCreateUpdateView.as_view(), name='module_content_create'),
+    path('module/<int:module_id>/content/<model_name>/<id>/', views.ContentCreateUpdateView.as_view(), name='module_content_update'),
+    path('content/<int:id>/delete/', views.ContentDeleteView.as_view(), name='module_content_delete'),
+    path('module/<int:module_id>/', views.ModuleContentListView.as_view(), name='module_content_list'),
+    path('module/order/', views.ModuleOrderView.as_view(), name='module_order'),
+    path('content/order/', views.ContentOrderView.as_view(), name='content_order'),
+    # --- Public catalog URLs (NEW in Module 3) ---
+    # Public: list all courses filtered by a given subject
     path(
-        'mine/',
-        views.ManageCourseListView.as_view(),
-        name='manage_course_list'
+        'subject/<slug:subject>/',
+        views.CourseListView.as_view(),
+        name='course_list_subject'
     ),
-    # Create a new course
+    # Public: single course overview — MUST stay LAST (greedy pattern)
     path(
-        'create/',
-        views.CourseCreateView.as_view(),
-        name='course_create'
+        '<slug:slug>/',
+        views.CourseDetailView.as_view(),
+        name='course_detail'
     ),
-    # Edit an existing course
-    path(
-        '<pk>/edit/',
-        views.CourseUpdateView.as_view(),
-        name='course_edit'
-    ),
-    # Delete a course
-    path(
-        '<pk>/delete/',
-        views.CourseDeleteView.as_view(),
-        name='course_delete'
-    ),
-    # Manage the modules of a specific course (formset)
-    path(
-        '<pk>/module/',
-        views.CourseModuleUpdateView.as_view(),
-        name='course_module_update'
-    ),
-    # Create new content of a given type inside a module
-    path(
-        'module/<int:module_id>/content/<model_name>/create/',
-        views.ContentCreateUpdateView.as_view(),
-        name='module_content_create'
-    ),
-    # Update an existing content object of a given type
-    path(
-        'module/<int:module_id>/content/<model_name>/<id>/',
-        views.ContentCreateUpdateView.as_view(),
-        name='module_content_update'
-    ),
-    # Delete a content object (and its linked item)
-    path(
-        'content/<int:id>/delete/',
-        views.ContentDeleteView.as_view(),
-        name='module_content_delete'
-    ),
-    # List the contents of a specific module (with the modules sidebar)
-    path(
-        'module/<int:module_id>/',
-        views.ModuleContentListView.as_view(),
-        name='module_content_list'
-    ),
-
-    # AJAX endpoint to save the new order of modules (drag & drop)
-path(
-    'module/order/',
-    views.ModuleOrderView.as_view(),
-    name='module_order'
-),
-# AJAX endpoint to save the new order of module contents (drag & drop)
-path(
-    'content/order/',
-    views.ContentOrderView.as_view(),
-    name='content_order'
-),
 ]
