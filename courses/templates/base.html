@@ -14,7 +14,6 @@
         {# Show Sign out for authenticated users, Sign in for guests #}
         {% if request.user.is_authenticated %}
           <li>
-            {# Logout requires a POST form in Django 5 (GET is no longer allowed) #}
             <form action="{% url "logout" %}" method="post">
               {% csrf_token %}
               <button type="submit">Sign out</button>
@@ -30,6 +29,9 @@
       {% block content %}
       {% endblock %}
     </div>
+    {# New block: allows child templates to inject JavaScript files #}
+    {% block include_js %}
+    {% endblock %}
     <script>
       document.addEventListener('DOMContentLoaded', (event) => {
         // DOM loaded

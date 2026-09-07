@@ -18,6 +18,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from .forms import ModuleFormSet
 from .models import Content, Course, Module
+# Third-party mixins: skip CSRF check + parse/return JSON automatically
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 
 
 class OwnerMixin:
@@ -182,3 +184,25 @@ class ModuleContentListView(TemplateResponseMixin, View):
             Module, id=module_id, course__owner=request.user
         )
         return self.render_to_response({'module': module})
+
+class ModuleOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    """Receives the new module order as JSON and updates it in the DB."""
+    def post(self, request):
+        # request_json is a dict like: {"3": 0, "1": 1, "2": 2}
+        for id, order in self.request_json.items():
+            # SECURITY: only update modules of courses owned by the user
+            Module.objects.filter(
+                id=id, course__owner=request.user
+            ).update(order=order)
+        return self.render_json_response({'saved': 'OK'})
+
+
+class ContentOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    """Receives the new content order as JSON and updates it in the DB."""
+    def post(self, request):
+        for id, order in self.request_json.items():
+            # SECURITY: only update contents of the user's own courses
+            Content.objects.filter(
+                id=id, module__course__owner=request.user
+            ).update(order=order)
+        return self.render_json_response({'saved': 'OK'})

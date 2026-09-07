@@ -33,9 +33,7 @@
       {% for content in module.contents.all %}
         <div data-id="{{ content.id }}">
           {% with item=content.item %}
-            {# Show the item title + its model type via our custom filter #}
             <p>{{ item }} ({{ item|model_name }})</p>
-            {# Build the edit URL dynamically using the model name #}
             <a href="{% url "module_content_update" module.id item|model_name item.id %}">
               Edit
             </a>
@@ -66,4 +64,53 @@
     </ul>
   </div>
 {% endwith %}
+{% endblock %}
+
+{# Load the HTML5 Sortable library from a public CDN #}
+{% block include_js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js"></script>
+{% endblock %}
+
+{% block domready %}
+  // Options for the Fetch API HTTP requests
+  var options = {
+    method: 'POST',
+    mode: 'same-origin'
+  };
+  const moduleOrderUrl = '{% url "module_order" %}';
+  const contentOrderUrl = '{% url "content_order" %}';
+
+  // Make the modules sidebar sortable (drag & drop)
+  sortable('#modules', {
+    forcePlaceholderSize: true,
+    placeholderClass: 'placeholder'
+  })[0].addEventListener('sortupdate', function(e) {
+    modulesOrder = {};
+    var modules = document.querySelectorAll('#modules li');
+    modules.forEach(function (module, index) {
+      // Store the new index keyed by the module ID (from data-id)
+      modulesOrder[module.dataset.id] = index;
+      // Update the visible number in the sidebar (index + 1)
+      module.querySelector('.order').innerHTML = index + 1;
+    });
+    // Attach the JSON body and send the POST request
+    options['body'] = JSON.stringify(modulesOrder);
+    fetch(moduleOrderUrl, options)
+  });
+
+  // Make the module contents area sortable (drag & drop)
+  sortable('#module-contents', {
+    forcePlaceholderSize: true,
+    placeholderClass: 'placeholder'
+  })[0].addEventListener('sortupdate', function(e) {
+    contentOrder = {};
+    var contents = document.querySelectorAll('#module-contents div');
+    contents.forEach(function (content, index) {
+      // Store the new index keyed by the content ID
+      contentOrder[content.dataset.id] = index;
+    });
+    // Attach the JSON body and send the POST request
+    options['body'] = JSON.stringify(contentOrder);
+    fetch(contentOrderUrl, options)
+  });
 {% endblock %}
