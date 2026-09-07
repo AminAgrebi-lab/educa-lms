@@ -14,7 +14,7 @@ urlpatterns = [
         views.CourseCreateView.as_view(),
         name='course_create'
     ),
-    # Edit an existing course (pk = primary key of the course)
+    # Edit an existing course
     path(
         '<pk>/edit/',
         views.CourseUpdateView.as_view(),
@@ -26,10 +26,28 @@ urlpatterns = [
         views.CourseDeleteView.as_view(),
         name='course_delete'
     ),
-    # Update the modules of a course
+    # Manage the modules of a specific course (formset)
     path(
         '<pk>/module/',
         views.CourseModuleUpdateView.as_view(),
         name='course_module_update'
+    ),
+    # Create new content of a given type inside a module
+    path(
+        'module/<int:module_id>/content/<model_name>/create/',
+        views.ContentCreateUpdateView.as_view(),
+        name='module_content_create'
+    ),
+    # Update an existing content object of a given type
+    path(
+        'module/<int:module_id>/content/<model_name>/<id>/',
+        views.ContentCreateUpdateView.as_view(),
+        name='module_content_update'
+    ),
+    # Delete a content object (and its linked item)
+    path(
+        'content/<int:id>/delete/',
+        views.ContentDeleteView.as_view(),
+        name='module_content_delete'
     ),
 ]
