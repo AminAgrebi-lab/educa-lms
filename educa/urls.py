@@ -26,6 +26,8 @@ urlpatterns = [
     path('course/', include('courses.urls')),
         # Include the students app URL patterns under the 'students/' prefix
     path('students/', include('students.urls')),
+        # Debug toolbar URLs (development only)
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
 
 # Serve media files during development only (DEBUG=True)

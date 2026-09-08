@@ -31,6 +31,9 @@ from django.views.generic.detail import DetailView
 # Cross-app import: enrollment form built in the students app
 from students.forms import CourseEnrollForm
 
+# The low-level cache API (default cache backend)
+from django.core.cache import cache
+
 
 class CourseDetailView(DetailView):
     """Public view: displays the overview of a single course."""

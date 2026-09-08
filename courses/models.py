@@ -6,6 +6,9 @@ from django.db import models
 # Import the custom OrderField from the fields.py file we created
 from .fields import OrderField
 
+# Renders a template into a string (used to render each content type)
+from django.template.loader import render_to_string
+
 
 class Subject(models.Model):
     """Represents a broad subject area (e.g., Mathematics, Programming)."""
@@ -79,6 +82,14 @@ class ItemBase(models.Model):
     title = models.CharField(max_length=250)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def render(self):
+        # Dynamically pick the template matching this model's name:
+        # text.html / image.html / video.html / file.html
+        return render_to_string(
+            f'courses/content/{self._meta.model_name}.html',
+            {'item': self}
+        )
 
     class Meta:
         abstract = True

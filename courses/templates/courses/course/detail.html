@@ -1,45 +1,40 @@
 {% extends "base.html" %}
+{# Load the cache template tags to enable the {% cache %} tag #}
+{% load cache %}
 {% block title %}
   {{ object.title }}
 {% endblock %}
 {% block content %}
-  {% with subject=object.subject %}
-    <h1>
-      {{ object.title }}
-    </h1>
-    <div class="module">
-      <h2>Overview</h2>
-      <p>
-        <a href="{% url "course_list_subject" subject.slug %}">
-        {{ subject.title }}</a>.
-        {{ object.modules.count }} modules.
-        Instructor: {{ object.owner.get_full_name }}
-      </p>
-      {{ object.overview|linebreaks }}
-      
-      {# Enrollment area #}
-      {# Three states: enrolled / logged-in not enrolled / guest #}
-      {% if request.user.is_authenticated %}
-        {% if enrolled %}
-          {# Already enrolled: show a confirmation + link to the contents #}
-          <p>You are enrolled in this course.</p>
-          <a href="{% url "student_course_detail" object.id %}" class="button">
-            Access contents
+  <h1>
+    {{ module.title }}
+  </h1>
+  <div class="contents">
+    <h3>Modules</h3>
+    <ul id="modules">
+      {% for m in object.modules.all %}
+        <li data-id="{{ m.id }}" {% if m == module %}class="selected"{% endif %}>
+          <a href="{% url "student_course_detail_module" object.id m.id %}">
+            <span>
+              Module <span class="order">{{ m.order|add:1 }}</span>
+            </span>
+            <br>
+            {{ m.title }}
           </a>
-        {% else %}
-          {# Logged in but not enrolled yet: show the enroll form #}
-          <form action="{% url "student_enroll_course" %}" method="post">
-            {{ enroll_form }}
-            {% csrf_token %}
-            <input type="submit" value="Enroll now">
-          </form>
-        {% endif %}
-      {% else %}
-        {# Guest: invite them to register first #}
-        <a href="{% url "student_registration" %}" class="button">
-          Register to enroll
-        </a>
-      {% endif %}
-    </div>
-  {% endwith %}
+        </li>
+      {% empty %}
+        <li>No modules yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="module">
+    {# Cache this fragment for 600s; unique per module via the extra arg #}
+    {% cache 600 module_contents module %}
+      {% for content in module.contents.all %}
+        {% with item=content.item %}
+          <h2>{{ item.title }}</h2>
+          {{ item.render }}
+        {% endwith %}
+      {% endfor %}
+    {% endcache %}
+  </div>
 {% endblock %}

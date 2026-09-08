@@ -1,4 +1,6 @@
 from django.urls import path
+# Decorator that caches the full rendered output of a view, per URL
+from django.views.decorators.cache import cache_page
 from . import views
 
 urlpatterns = [
@@ -14,22 +16,21 @@ urlpatterns = [
         views.StudentEnrollCourseView.as_view(),
         name='student_enroll_course'
     ),
-        # List the courses the current student is enrolled in
+    # List the courses the current student is enrolled in
     path(
         'courses/',
         views.StudentCourseListView.as_view(),
         name='student_course_list'
     ),
-    # Detail page of an enrolled course (first module by default)
+    # Student course page cached for 15 minutes per URL
     path(
         'course/<pk>/',
-        views.StudentCourseDetailView.as_view(),
+        cache_page(60 * 15)(views.StudentCourseDetailView.as_view()),
         name='student_course_detail'
     ),
-    # Detail page of an enrolled course for a specific module
     path(
         'course/<pk>/<module_id>/',
-        views.StudentCourseDetailView.as_view(),
+        cache_page(60 * 15)(views.StudentCourseDetailView.as_view()),
         name='student_course_detail_module'
     ),
 ]

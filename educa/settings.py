@@ -31,9 +31,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
+    'redisboard',   # Adds Redis metrics to the Django admin site
+
+
+    'debug_toolbar',   # NEW: cache/SQL inspection panels
+    'embed_video',
     # New app: handles student registration and enrollment
     'students.apps.StudentsConfig',
-    
     'courses.apps.CoursesConfig', # Our custom app
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,14 +49,24 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # PER-SITE CACHE: stores every GET response (temporary experiment)
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
+    # PER-SITE CACHE: serves cached responses (temporary experiment)
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Per-site cache configuration
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 60 * 15   # 15 minutes
+CACHE_MIDDLEWARE_KEY_PREFIX = 'educa'  # avoid key collisions across projects
 
 ROOT_URLCONF = 'educa.urls'
 
@@ -140,3 +155,22 @@ from django.urls import reverse_lazy
 # Where to send users after a successful login when no ?next= is present
 # (this fixes the old /accounts/profile/ 404!)
 LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
+
+# Low-level cache configuration — Windows-friendly, no Docker needed.
+# LocMemCache keeps cached data in the process memory (like Memcached,
+# but local). In Module 6 we will switch to Redis via Docker Compose.
+CACHES = {
+    'default': {
+       # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+      #  'LOCATION': 'educa-cache',  # Unique name for this cache instance
+
+                # Redis backend: memory-based, shared, production-grade
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379',
+    }
+}
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    '::1',   
+]
