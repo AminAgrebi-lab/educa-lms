@@ -31,10 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-
+    'rest_framework',   # NEW: Django REST framework application
     'redisboard',   # Adds Redis metrics to the Django admin site
-
-
     'debug_toolbar',   # NEW: cache/SQL inspection panels
     'embed_video',
     # New app: handles student registration and enrollment
@@ -174,3 +172,12 @@ INTERNAL_IPS = [
     '127.0.0.1',
     '::1',   
 ]
+
+# Global DRF configuration
+REST_FRAMEWORK = {
+    # Default rule: anonymous users get READ-ONLY access;
+    # write operations require the matching Django model permissions
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
