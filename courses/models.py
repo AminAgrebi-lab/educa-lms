@@ -35,9 +35,17 @@ class Course(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     overview = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
+    
+    # Many-to-many: the students enrolled in this course (Module 3)
+    # THIS FIELD WAS MISSING!
+    students = models.ManyToManyField(
+        User,
+        related_name='courses_joined',  # Reverse lookup: user.courses_joined.all()
+        blank=True                      # A course can exist with zero students
+    )
 
     class Meta:
-        ordering = ['-created']  # Newest courses first
+        ordering = ['-created']
 
     def __str__(self):
         return self.title

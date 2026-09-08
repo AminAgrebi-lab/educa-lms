@@ -24,6 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # Include the courses app URL patterns under the 'course/' prefix
     path('course/', include('courses.urls')),
+        # Include the students app URL patterns under the 'students/' prefix
+    path('students/', include('students.urls')),
 ]
 
 # Serve media files during development only (DEBUG=True)

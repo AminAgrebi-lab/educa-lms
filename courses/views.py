@@ -28,12 +28,30 @@ from .models import Subject
 # Generic view to display a single object by pk or slug
 from django.views.generic.detail import DetailView
 
+# Cross-app import: enrollment form built in the students app
+from students.forms import CourseEnrollForm
+
 
 class CourseDetailView(DetailView):
     """Public view: displays the overview of a single course."""
     model = Course
     template_name = 'courses/course/detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pre-fill the hidden course field with the course being viewed
+        context['enroll_form'] = CourseEnrollForm(
+            initial={'course': self.object}
+        )
+        # NEW: flag telling the template whether the user is already enrolled
+        context['enrolled'] = (
+            self.request.user.is_authenticated
+            and self.object.students.filter(
+                pk=self.request.user.pk
+            ).exists()
+        )
+        return context
+  
 
 class OwnerMixin:
     """Mixin: filters any QuerySet by the current user (owner)."""

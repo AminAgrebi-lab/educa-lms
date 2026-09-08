@@ -15,8 +15,31 @@
         {{ object.modules.count }} modules.
         Instructor: {{ object.owner.get_full_name }}
       </p>
-      {# linebreaks converts newlines in the overview into <br>/<p> tags #}
       {{ object.overview|linebreaks }}
+      
+      {# Enrollment area #}
+      {# Three states: enrolled / logged-in not enrolled / guest #}
+      {% if request.user.is_authenticated %}
+        {% if enrolled %}
+          {# Already enrolled: show a confirmation + link to the contents #}
+          <p>You are enrolled in this course.</p>
+          <a href="{% url "student_course_detail" object.id %}" class="button">
+            Access contents
+          </a>
+        {% else %}
+          {# Logged in but not enrolled yet: show the enroll form #}
+          <form action="{% url "student_enroll_course" %}" method="post">
+            {{ enroll_form }}
+            {% csrf_token %}
+            <input type="submit" value="Enroll now">
+          </form>
+        {% endif %}
+      {% else %}
+        {# Guest: invite them to register first #}
+        <a href="{% url "student_registration" %}" class="button">
+          Register to enroll
+        </a>
+      {% endif %}
     </div>
   {% endwith %}
 {% endblock %}

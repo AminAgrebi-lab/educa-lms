@@ -31,6 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # New app: handles student registration and enrollment
+    'students.apps.StudentsConfig',
+    
     'courses.apps.CoursesConfig', # Our custom app
     'django.contrib.admin',
     'django.contrib.auth',
@@ -130,3 +133,10 @@ MEDIA_URL = 'media/'
 
 # Local filesystem path where media files will be physically stored
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# reverse_lazy resolves the URL lazily at first use, not at import time
+from django.urls import reverse_lazy
+
+# Where to send users after a successful login when no ?next= is present
+# (this fixes the old /accounts/profile/ 404!)
+LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
