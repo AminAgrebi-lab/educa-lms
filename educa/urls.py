@@ -28,6 +28,8 @@ urlpatterns = [
     path('students/', include('students.urls')),
         # Debug toolbar URLs (development only)
     path('__debug__/', include('debug_toolbar.urls')),
+        # Mount the whole REST API under the /api/ prefix
+    path('api/', include('courses.api.urls')),
 ]
 
 # Serve media files during development only (DEBUG=True)
