@@ -8,13 +8,18 @@ from courses.models import Course
 
 @login_required
 def course_chat_room(request, course_id):
-    """Serves the chat room of a course for enrolled students only."""
     try:
-        # SECURITY: fetch the course ONLY from the courses this user
-        # is enrolled in (reverse many-to-many from Module 3)
         course = request.user.courses_joined.get(id=course_id)
     except Course.DoesNotExist:
-        # Not enrolled (or course doesn't exist): deny access with 403
         return HttpResponseForbidden()
-    # Render the chat room template with the course in the context
-    return render(request, 'chat/room.html', {'course': course})
+    # Last 5 messages, newest first, with user fetched in the same query
+    latest_messages = course.chat_messages.select_related(
+        'user'
+    ).order_by('-id')[:5]
+    # Flip back to chronological order for display
+    latest_messages = reversed(latest_messages)
+    return render(
+        request,
+        'chat/room.html',
+        {'course': course, 'latest_messages': latest_messages}
+    )

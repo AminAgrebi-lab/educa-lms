@@ -2,6 +2,18 @@
 {% block title %}Chat room for "{{ course.title }}"{% endblock %}
 {% block content %}
   <div id="chat">
+    {# Chat history: the latest 5 messages rendered server-side #}
+    {% for message in latest_messages %}
+      <div class="message {% if message.user == request.user %}me{% else %}other{% endif %}">
+        <strong>{{ message.user.username }}</strong>
+        <span class="date">
+          {{ message.sent_on|date:"Y.m.d H:i A" }}
+        </span>
+        <br>
+        {# NOT marked |safe on purpose: protects against XSS in messages #}
+        {{ message.content }}
+      </div>
+    {% endfor %}
   </div>
   <div id="chat-input">
     <input id="chat-message-input" type="text">
@@ -50,7 +62,6 @@
   const input = document.querySelector('#chat-message-input');
   const submit = document.querySelector('#chat-message-submit');
 
-  // The Send button listener
   submit.onclick = function (event) {
     const message = input.value;
     chatSocket.send(JSON.stringify({'message': message}));
