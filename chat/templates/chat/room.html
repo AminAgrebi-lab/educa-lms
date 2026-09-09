@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Chat room for "{{ course.title }}"{% endblock %}
+{% block content %}
+  {# Container where chat messages will be appended by JavaScript #}
+  <div id="chat">
+  </div>
+  {# Message composer: text input + send button #}
+  <div id="chat-input">
+    <input id="chat-message-input" type="text">
+    <input id="chat-message-submit" type="submit" value="Send">
+  </div>
+{% endblock %}
+{# Empty for now: will load the WebSocket client script later #}
+{% block include_js %}
+{% endblock %}
+{# Empty for now: will open the WebSocket connection on DOM ready #}
+{% block domready %}
+{% endblock %}

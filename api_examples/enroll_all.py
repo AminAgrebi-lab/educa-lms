@@ -24,7 +24,7 @@ while url is not None:
     courses_in_page = response.get('results', [])
     all_courses.extend(courses_in_page)
 
-print(f"\n✅ Found a total of {len(all_courses)} courses.\n")
+print(f"\n Found a total of {len(all_courses)} courses.\n")
 print("🎓 Attempting to enroll in all courses...\n")
 
 
@@ -39,10 +39,10 @@ for course in all_courses:
     )
     
     if r.status_code == 200:
-        print(f'✅ Successfully enrolled in: {course_title}')
+        print(f'Successfully enrolled in: {course_title}')
     elif r.status_code == 401:
-        print(f'❌ AUTH FAILED for {course_title}. Check username/password.')
+        print(f'AUTH FAILED for {course_title}. Check username/password.')
     else:
-        print(f'⚠️ Unexpected status {r.status_code} for {course_title}')
+        print(f'Unexpected status {r.status_code} for {course_title}')
 
 print("\n🏁 Script finished.")

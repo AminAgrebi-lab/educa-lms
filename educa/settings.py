@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from django.urls import reverse_lazy
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,13 +32,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'chat.apps.ChatConfig',
     'rest_framework',   # NEW: Django REST framework application
     'redisboard',   # Adds Redis metrics to the Django admin site
     'debug_toolbar',   # NEW: cache/SQL inspection panels
     'embed_video',
     # New app: handles student registration and enrollment
     'students.apps.StudentsConfig',
-    'courses.apps.CoursesConfig', # Our custom app
+    'courses.apps.CoursesConfig',  # Our custom app
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -148,7 +151,6 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # reverse_lazy resolves the URL lazily at first use, not at import time
-from django.urls import reverse_lazy
 
 # Where to send users after a successful login when no ?next= is present
 # (this fixes the old /accounts/profile/ 404!)
@@ -159,10 +161,10 @@ LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
 # but local). In Module 6 we will switch to Redis via Docker Compose.
 CACHES = {
     'default': {
-       # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-      #  'LOCATION': 'educa-cache',  # Unique name for this cache instance
+        # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        #  'LOCATION': 'educa-cache',  # Unique name for this cache instance
 
-                # Redis backend: memory-based, shared, production-grade
+        # Redis backend: memory-based, shared, production-grade
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         'LOCATION': 'redis://127.0.0.1:6379',
     }
@@ -170,7 +172,7 @@ CACHES = {
 
 INTERNAL_IPS = [
     '127.0.0.1',
-    '::1',   
+    '::1',
 ]
 
 # Global DRF configuration
@@ -181,3 +183,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+# Tells Channels where to find the root ASGI routing configuration
+ASGI_APPLICATION = 'educa.asgi.application'

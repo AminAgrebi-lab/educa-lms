@@ -30,6 +30,8 @@ urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
         # Mount the whole REST API under the /api/ prefix
     path('api/', include('courses.api.urls')),
+        # Chat URLs under /chat/ with their own namespace
+    path('chat/', include('chat.urls', namespace='chat')),
 ]
 
 # Serve media files during development only (DEBUG=True)
