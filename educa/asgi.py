@@ -1,27 +1,22 @@
-"""
-ASGI config for educa project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
-"""
-
 import os
 
-# Channels router: maps protocol types (http/websocket) to ASGI apps
-from channels.routing import ProtocolTypeRouter
-# Django's built-in ASGI application for standard HTTP requests
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'educa.settings')
 
-# Initialize Django's ASGI app (before building the router)
+# Initialize Django BEFORE importing chat routing (models need the app registry)
 django_asgi_app = get_asgi_application()
 
-# Root ASGI application: route each protocol to its handler
+from chat.routing import websocket_urlpatterns
+
 application = ProtocolTypeRouter({
-    # Standard HTTP requests keep flowing to your existing Django views
+    # Regular HTTP requests keep going to your Django views
     'http': django_asgi_app,
-    # 'websocket': will be wired in the next reading (Writing a Consumer)
+    # WebSocket requests: host validation → session auth → URL routing
+    'websocket': AllowedHostsOriginValidator(
+        AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+    ),
 })

@@ -186,3 +186,15 @@ REST_FRAMEWORK = {
 
 # Tells Channels where to find the root ASGI routing configuration
 ASGI_APPLICATION = 'educa.asgi.application'
+
+# Channel layer configuration: uses Redis as the message broker
+CHANNEL_LAYERS = {
+    'default': {
+        # channels-redis backend: asynchronous, production-grade
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            # Connects to the Redis Windows Service running on localhost
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    },
+}
