@@ -10,13 +10,9 @@ ADMINS = [
     ('Your Name', 'you@yourdomain.com'),  # Replace with your own contact
 ]
 
-# TEMPORARY: accept any host; restricted to your real domain later
-ALLOWED_HOSTS = [
-    'educaproject.com',
-    'www.educaproject.com',
-    '127.0.0.1',
-    'localhost',
-]
+# Leading dot = subdomain wildcard: matches educaproject.com AND any subdomain
+# (local-testing hosts kept for our no-Docker prod-mode checks 🪟)
+ALLOWED_HOSTS = ['.educaproject.com', '127.0.0.1', 'localhost']
 
 # Production database: PostgreSQL served by the 'db' compose service.
 # Locally, a .env file can override HOST/PORT to point at a cloud provider.

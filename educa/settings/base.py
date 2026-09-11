@@ -71,6 +71,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # NEW: custom subdomain routing — last on the way in, first on the way out
+    'courses.middleware.subdomain_course_middleware',
 ]
 
 # Per-site cache configuration

@@ -4,8 +4,7 @@ DEBUG = True
 
 # Allow the sample domain during local development as well
 ALLOWED_HOSTS = [
-    'educaproject.com',
-    'www.educaproject.com',
+    '.educaproject.com',   # wildcard: domain + any subdomain
     '127.0.0.1',
     'localhost',
 ]
