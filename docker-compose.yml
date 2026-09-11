@@ -1,0 +1,20 @@
+# Docker Compose: defines the multi-container production application
+services:
+  web:
+    # Build the image from the Dockerfile located in this same directory
+    build: .
+    # 🚨 ADAPTED PATH: in THIS repo manage.py sits at the project root,
+    # so inside the container it lives at /code/manage.py.
+    # (The book writes /code/educa/manage.py for its nested repo layout)
+    command: python /code/manage.py runserver 0.0.0.0:8000
+    # Restart the container automatically whenever it stops
+    restart: always
+    # Mount the local project directory into /code for live code updates
+    volumes:
+      - .:/code
+    # Map host port 8000 to container port 8000
+    ports:
+      - "8000:8000"
+    # Tell Django which settings module to load inside the container
+    environment:
+      - DJANGO_SETTINGS_MODULE=educa.settings.prod
