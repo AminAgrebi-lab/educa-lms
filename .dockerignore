@@ -1,0 +1,8 @@
+# Never bake dev data or history into the production image
+db.sqlite3
+media/
+env/
+.git/
+__pycache__/
+*.py[cod]
+.env
