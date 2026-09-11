@@ -200,3 +200,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
+STATIC_URL = 'static/'
+# Directory where collectstatic gathers ALL static files for NGINX
+STATIC_ROOT = BASE_DIR / 'static'

@@ -1,0 +1,22 @@
+# Upstream: the uWSGI server reachable through its Unix socket
+upstream uwsgi_app {
+    # 🚨 ADAPTED: must match the socket path in config/uwsgi/uwsgi.ini
+    server unix:/code/uwsgi_app.sock;
+}
+
+server {
+    # The only public door: HTTP port 80
+    listen       80;
+    # Hostnames this server block answers to
+    server_name  www.educaproject.com educaproject.com;
+    # Errors to stderr so container logs can capture them
+    error_log    stderr warn;
+    # Access log to stdout for the same reason
+    access_log   /dev/stdout main;
+
+    # Forward every request to uWSGI through the socket
+    location / {
+        include      /etc/nginx/uwsgi_params;
+        uwsgi_pass   uwsgi_app;
+    }
+}
