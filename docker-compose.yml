@@ -38,7 +38,7 @@ services:
       - cache
 
   nginx:
-    # Official NGINX image: reverse proxy + static file server
+    # Official NGINX image: reverse proxy + static file server + TLS edge
     image: nginx:1.25.5
     restart: always
     volumes:
@@ -46,3 +46,5 @@ services:
       - .:/code
     ports:
       - "80:80"
+      # Expose HTTPS port 443
+      - "443:443"

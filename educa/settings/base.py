@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+import os
 
 from django.urls import reverse_lazy
 from pathlib import Path
@@ -23,7 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--0pkbs_tt6!+4@vytt+qz87e_2m)if!-0om870wl5tf6)sx=r='
+# SECRET_KEY = 'django-insecure--0pkbs_tt6!+4@vytt+qz87e_2m)if!-0om870wl5tf6)sx=r='
+# SECURITY WARNING: keep the secret key used in production secret!
+# Reads from environment variable; falls back to a secure dummy key for local dev
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'super-long-and-secure-fallback-key-for-local-dev-only-replace-in-prod-env-1234567890!@#$%'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

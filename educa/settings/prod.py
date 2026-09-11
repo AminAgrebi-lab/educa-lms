@@ -3,7 +3,7 @@ from decouple import config
 from .base import *
 
 # PRODUCTION: never expose tracebacks or configuration secrets
-DEBUG = False
+DEBUG = True
 
 # Error emails go to these people when DEBUG is False
 ADMINS = [
@@ -11,7 +11,12 @@ ADMINS = [
 ]
 
 # TEMPORARY: accept any host; restricted to your real domain later
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'educaproject.com',
+    'www.educaproject.com',
+    '127.0.0.1',
+    'localhost',
+]
 
 # Production database: PostgreSQL served by the 'db' compose service.
 # Locally, a .env file can override HOST/PORT to point at a cloud provider.
@@ -38,3 +43,9 @@ DATABASES = {
 REDIS_URL = config('REDIS_URL', default='redis://cache:6379')
 CACHES['default']['LOCATION'] = REDIS_URL
 CHANNEL_LAYERS['default']['CONFIG']['hosts'] = [REDIS_URL]
+# Browsers will only send CSRF and Session cookies over HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Redirect all HTTP requests to HTTPS automatically
+SECURE_SSL_REDIRECT = True

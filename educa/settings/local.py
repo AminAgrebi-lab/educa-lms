@@ -1,8 +1,14 @@
-# Import every common setting defined in base.py
 from .base import *
 
-# Local development: debug mode ON and the SQLite database
 DEBUG = True
+
+# Allow the sample domain during local development as well
+ALLOWED_HOSTS = [
+    'educaproject.com',
+    'www.educaproject.com',
+    '127.0.0.1',
+    'localhost',
+]
 
 DATABASES = {
     'default': {
