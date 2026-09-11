@@ -212,3 +212,8 @@ CHANNEL_LAYERS = {
 STATIC_URL = 'static/'
 # Directory where collectstatic gathers ALL static files for NGINX
 STATIC_ROOT = BASE_DIR / 'static'
+
+# Print emails to the console instead of sending them (development only)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Optional: friendlier sender address in the printed emails
+DEFAULT_FROM_EMAIL = 'admin@educaproject.com'
