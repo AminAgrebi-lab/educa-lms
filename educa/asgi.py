@@ -1,22 +1,22 @@
 import os
-
-from channels.auth import AuthMiddlewareStack
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'educa.settings')
+from channels.routing import ProtocolTypeRouter, URLRouter
+# NEW: validate WebSocket origins against ALLOWED_HOSTS
+from channels.security.websocket import AllowedHostsOriginValidator
+from channels.auth import AuthMiddlewareStack
 
-# Initialize Django BEFORE importing chat routing (models need the app registry)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'educa.settings')
 django_asgi_app = get_asgi_application()
 
 from chat.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
-    # Regular HTTP requests keep going to your Django views
     'http': django_asgi_app,
-    # WebSocket requests: host validation → session auth → URL routing
+    # NEW: wrap the WebSocket stack with AllowedHostsOriginValidator
     'websocket': AllowedHostsOriginValidator(
-        AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+        AuthMiddlewareStack(
+            URLRouter(websocket_urlpatterns)
+        )
     ),
 })

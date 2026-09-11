@@ -35,8 +35,8 @@
   );
 
   // WebSocket endpoint for THIS course room
-  const url = 'ws://' + window.location.host
-            + '/ws/chat/room/' + courseId + '/';
+  const url = 'wss://' + window.location.host
+            + '/wss/chat/room/' + courseId + '/';
   const chatSocket = new WebSocket(url);
 
   // When a message arrives: render sender name, time, and me/other style
