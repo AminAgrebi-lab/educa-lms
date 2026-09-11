@@ -1,20 +1,48 @@
-# Docker Compose: defines the multi-container production application
+# Docker Compose: multi-container production application
 services:
-  web:
-    # Build the image from the Dockerfile located in this same directory
-    build: .
-    # 🚨 ADAPTED PATH: in THIS repo manage.py sits at the project root,
-    # so inside the container it lives at /code/manage.py.
-    # (The book writes /code/educa/manage.py for its nested repo layout)
-    command: python /code/manage.py runserver 0.0.0.0:8000
-    # Restart the container automatically whenever it stops
+  db:
+    # Official PostgreSQL image
+    image: postgres:16.2
     restart: always
-    # Mount the local project directory into /code for live code updates
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  cache:
+    # Official Redis image for cache backend and channel layer
+    image: redis:7.2.4
+    restart: always
+    volumes:
+      - ./data/cache:/data
+
+  web:
+    build: .
+    # 🚨 ADAPTED: manage.py lives at the project root in THIS repo.
+    # Wait for PostgreSQL, then serve Django through the uWSGI server
+    command: ["./wait-for-it.sh", "db:5432", "--",
+      "uwsgi", "--ini", "/code/config/uwsgi/uwsgi.ini"]
+    restart: always
     volumes:
       - .:/code
-    # Map host port 8000 to container port 8000
-    ports:
-      - "8000:8000"
-    # Tell Django which settings module to load inside the container
+    # NOTE: ports removed — uWSGI talks to NGINX via a Unix socket only
     environment:
       - DJANGO_SETTINGS_MODULE=educa.settings.prod
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
+      - cache
+
+  nginx:
+    # Official NGINX image: reverse proxy + static file server
+    image: nginx:1.25.5
+    restart: always
+    volumes:
+      - ./config/nginx:/etc/nginx/templates
+      - .:/code
+    ports:
+      - "80:80"
