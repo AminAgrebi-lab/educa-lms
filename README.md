@@ -131,5 +131,4 @@ admin + Redisboard. Keep them free of real e-mails or passwords.}}
 
 ## 📄 License & Contact
 
-Built by {{Your Name}} — {{e-mail / LinkedIn URL}}.
-Learning project; not intended for real production traffic.
+Built by Amin Agrebi
